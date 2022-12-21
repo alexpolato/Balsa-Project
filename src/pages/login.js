@@ -1,39 +1,58 @@
-import React, { useCallback, useContext } from "react";
-import { WithRouter, Navigate } from "react-router";
-import { AuthContext } from "../autentication/auth";
-import app from "../autentication/base";
+import React, { useState } from "react";
 import paths from "../utils/paths";
+import { useAuth } from "../autentication/auth";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../components/button";
 
-function Login({ history }) {
-  const handleLogin = useCallback(
-    async (event) => {
-      event.preventDefault();
-      const { email, password } = event.target.elements;
-      try {
-        await app
-          .auth()
-          .signInWithEmailAndPassword(email.value, password.value);
-        history.push("/");
-      } catch (error) {
-        alert(error);
-      }
-    },
-    [history]
-  );
+const defaultData = {
+  email: "",
+  password: "",
+};
 
-  const { currentUser } = useContext(AuthContext);
-  if (currentUser) {
-    return <Navigate to={paths.home} />;
-  }
+function Login() {
+  const { logIn } = useAuth();
+  const navigate = useNavigate();
+  const [data, setData] = useState(defaultData);
+
+  const handleSignUp = async (event) => {
+    try {
+      throw new Error(`fudeu`);
+      const result = await logIn(data.email, data.password);
+      navigate(paths.home);
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   return (
     <div>
       <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <input name="email" type="email" placeholder="email" />
-        <input name="password" type="password" placeholder="senha" />
-        <button type="submit">Login</button>
-      </form>
+      <input
+        value={data.email}
+        onChange={(e) =>
+          setData((prev) => {
+            return { ...prev, email: e.target.value };
+          })
+        }
+        name="email"
+        type="email"
+        placeholder="email"
+      />
+      <input
+        value={data.password}
+        onChange={(e) =>
+          setData((prev) => {
+            return { ...prev, password: e.target.value };
+          })
+        }
+        name="password"
+        type="password"
+        placeholder="senha"
+      />
+      <button onClick={handleSignUp} type="submit">
+        Login
+      </button>
+      <Button>aaa</Button>
     </div>
   );
 }

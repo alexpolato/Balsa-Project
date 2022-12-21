@@ -2,18 +2,27 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import paths from "./utils/paths";
 import SignUp from "./pages/signup";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./autentication/auth";
-import PrivateRoutes from "./autentication/PrivateRoutes";
+import PrivateRoutes from "./autentication/privateRoutes";
 
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <PrivateRoutes path={paths.home} element={<Home />} />
-        <Route path={paths.login} element={<Login />} />
-        <Route path={paths.signup} element={<SignUp />} />
-      </Routes>
+      <Router>
+        <Routes>
+          <Route
+            path={paths.home}
+            element={
+              <PrivateRoutes>
+                <Home />
+              </PrivateRoutes>
+            }
+          />
+          <Route path={paths.login} element={<Login />} />
+          <Route path={paths.signup} element={<SignUp />} />
+        </Routes>
+      </Router>
     </AuthProvider>
   );
 }

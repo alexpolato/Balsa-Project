@@ -1,33 +1,55 @@
-import React, { useCallback } from "react";
-import app from "../autentication/base";
-import { WithRouter } from "react-router";
-// import paths from "../utils/paths";
+import React, { useState } from "react";
+import paths from "../utils/paths";
+import { useAuth } from "../autentication/auth";
+import { useNavigate } from "react-router-dom";
 
-const SignUp = ({ history }) => {
-  const handleSignUp = useCallback(
-    async (event) => {
-      event.preventDefault();
-      const { email, password } = event.target.elements;
-      try {
-        await app
-          .auth()
-          .createUserWithEmailAndPassword(email.value, password.value);
-        history.push("/");
-      } catch (error) {
-        alert(error);
-      }
-    },
-    [history]
-  );
+const defaultData = {
+  email: "",
+  password: "",
+};
+
+const SignUp = () => {
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+  const [data, setData] = useState(defaultData);
+
+  const handleSignUp = async (event) => {
+    try {
+      const result = await signUp(data.email, data.password);
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   return (
     <div>
       <h1>SignUp</h1>
-      <form onSubmit={handleSignUp}>
-        <input name="email" type="email" placeholder="email" />
-        <input name="password" type="password" placeholder="senha" />
-        <button type="submit">SignUp</button>
-      </form>
+      <input
+        value={data.email}
+        onChange={(e) =>
+          setData((prev) => {
+            return { ...prev, email: e.target.value };
+          })
+        }
+        name="email"
+        type="email"
+        placeholder="email"
+      />
+      <input
+        value={data.password}
+        onChange={(e) =>
+          setData((prev) => {
+            return { ...prev, password: e.target.value };
+          })
+        }
+        name="password"
+        type="password"
+        placeholder="senha"
+      />
+      <button onClick={handleSignUp} type="submit">
+        SignUp
+      </button>
+      <button onClick={() => navigate(paths.home)}>home</button>
     </div>
   );
 };
