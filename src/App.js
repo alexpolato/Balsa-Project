@@ -2,9 +2,10 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import paths from "./utils/paths";
 import SignUp from "./pages/signup";
+import ForgotPassword from "./pages/forgotPassword";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./autentication/auth";
-import PrivateRoutes from "./autentication/privateRoutes";
+import PrivateRoutes from "./autentication/privateRoutes.js";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             }
           />
           <Route path={paths.login} element={<Login />} />
+          <Route path={paths.forgotpass} element={<ForgotPassword />} />
           <Route path={paths.signup} element={<SignUp />} />
         </Routes>
       </Router>
