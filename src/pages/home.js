@@ -4,7 +4,10 @@ function Home() {
   return (
     <div>
       Home Page
-      <a href={paths.login}> login</a>
+      <div>
+        login :<a href={paths.login}> login</a>' 'fila:
+        <a href={paths.line}> fila</a>
+      </div>
     </div>
   );
 }

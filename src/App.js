@@ -2,6 +2,7 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import paths from "./utils/paths";
 import SignUp from "./pages/signup";
+import Line from "./pages/line";
 import ForgotPassword from "./pages/forgotPassword";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./autentication/auth";
@@ -23,6 +24,7 @@ function App() {
           <Route path={paths.login} element={<Login />} />
           <Route path={paths.forgotpass} element={<ForgotPassword />} />
           <Route path={paths.signup} element={<SignUp />} />
+          <Route path={paths.line} element={<Line />} />
         </Routes>
       </Router>
     </AuthProvider>

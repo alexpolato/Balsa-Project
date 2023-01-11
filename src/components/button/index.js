@@ -16,9 +16,7 @@ const Btn = styled(`button`)({
 export function Button({ children, onClick, className }) {
   return (
     <div className={className}>
-      <Btn onClick={onClick} variant="contained">
-        {children}
-      </Btn>
+      <Btn onClick={onClick}>{children}</Btn>
     </div>
   );
 }
