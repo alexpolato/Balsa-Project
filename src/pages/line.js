@@ -4,7 +4,8 @@ import { Button } from "../components/button";
 import { useState } from "react";
 import paths from "../utils/paths";
 import { useNavigate } from "react-router";
-import { CarCheck } from "../components/dialog/carCheck";
+import { Popup } from "../components/dialog/popup";
+import { Form } from "../components/carForm/form";
 
 const Root = styled(`div`)({
   margin: "30px 0",
@@ -111,7 +112,7 @@ function Line() {
               }}
             />
             <TextContainer sx={{ width: "70%" }}>
-              <TextTitle>Bloquado</TextTitle>
+              <TextTitle>Bloqueado</TextTitle>
               <TextSub>entre na fila</TextSub>
               <Text> pegue uma posicao</Text>
             </TextContainer>
@@ -124,9 +125,13 @@ function Line() {
           </StyledButton>
         </CardContainer>
       </Container>
-      <CarCheck openPopup={openPopup} setOpenPopup={setOpenPopup}>
-        helooooooo
-      </CarCheck>
+      <Popup
+        title={"Formulario"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <Form />
+      </Popup>
     </Root>
   );
 }
