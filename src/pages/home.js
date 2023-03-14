@@ -1,96 +1,134 @@
-import { Button } from "../components/button";
 import paths from "../utils/paths";
-import { styled, TextField, MenuItem } from "@mui/material";
-import { Box } from "@mui/system";
+import { styled, TextField, MenuItem, Input, Switch } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Input } from "../components/input";
+import { DateHandler } from "../utils/dateHandler";
+import { id } from "date-fns/locale";
+import { grey } from "@mui/material/colors";
+
+const Container = styled(`div`)({
+  display: "flex",
+  maxWidth: 1000,
+  margin: "0 auto",
+  justifyContent: "space-between",
+});
+
+const FerryContainer = styled(`div`)({
+  marginBottom: "20px",
+  width: "300px",
+  border: "1.5px solid #99E1D9",
+  borderRadius: "10px",
+  padding: "10px 30px",
+  display: "flex",
+  alignItems: "center",
+
+  boxShadow: " 0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+
+  justifyContent: "space-between",
+});
+
+const TextContainer = styled(`div`)({
+  display: "flex",
+  flexDirection: "column",
+  // alignItems: "center",
+  fontFamily: "Roboto, sans-serif",
+});
+
+const TextTitle = styled(`div`)({
+  fontSize: "30px",
+});
+const TextSub = styled(`div`)({
+  fontSize: "15px",
+  textAlign: "center",
+  maxWidth: "250px",
+  //
+});
+
+const date = new Date();
+const ferryDay = date.getDate();
+console.log(date);
+const ferriesMock = [
+  {
+    id: 0,
+    isActive: true,
+    capacity: 50,
+    timeCrossing: 60,
+    timeLeaving: new Date(`2023-03-${ferryDay}T18:10:00`),
+  },
+  {
+    id: 1,
+    isActive: true,
+    capacity: 70,
+    timeCrossing: 50,
+    timeLeaving: new Date(`2023-03-${ferryDay}T18:00:00`),
+  },
+  {
+    id: 2,
+    isActive: true,
+    capacity: 100,
+    timeCrossing: 40,
+    timeLeaving: new Date(`2023-03-${ferryDay}T18:30:00`),
+  },
+  {
+    id: 3,
+    isActive: true,
+    capacity: 40,
+    timeCrossing: 60,
+    timeLeaving: new Date(`2023-03-${ferryDay}T18:45:00`),
+  },
+  {
+    id: 4,
+    isActive: true,
+    capacity: 50,
+    timeCrossing: 60,
+    timeLeaving: new Date(`2023-03-${ferryDay}T19:00:00`),
+  },
+  {
+    id: 5,
+    isActive: true,
+    capacity: 60,
+    timeCrossing: 50,
+    timeLeaving: new Date(`2023-03-${ferryDay}T18:00:00`),
+  },
+];
 
 function Home() {
-  const [balsas, setBalsas] = useState([]);
-  const [veiculos, setVeiculos] = useState(0);
+  const [ferries, setFerries] = useState(ferriesMock);
+  const [veiculos, setVeiculos] = useState(3000);
   const [time, setTime] = useState("");
+  const [timeNoSeconds, setTimeNoSeconds] = useState("");
   const [speed, setSpeed] = useState(1);
+  const [ferryCardColor, setFerryCardColor] = useState("");
+  const [ferryTimeLeaving, setFerryTimeLeaving] = useState([
+    ferries.timeLeaving,
+  ]);
 
-  useEffect(() => {
-    setVeiculos(3000);
-    setBalsas([
-      {
-        id: 0,
-        status: true,
-        capacity: 50,
-        timeCrossing: 60,
-        timeLeaving: "10:00",
-      },
-      {
-        id: 1,
-        status: true,
-        capacity: 70,
-        timeCrossing: 50,
-        timeLeaving: "11:20",
-      },
-      {
-        id: 2,
-        status: true,
-        capacity: 100,
-        timeCrossing: 40,
-        timeLeaving: "10:10",
-      },
-      {
-        id: 3,
-        status: true,
-        capacity: 40,
-        timeCrossing: 60,
-        timeLeaving: "11:30",
-      },
-      {
-        id: 4,
-        status: true,
-        capacity: 50,
-        timeCrossing: 60,
-        timeLeaving: "10:45",
-      },
-      {
-        id: 5,
-        status: true,
-        capacity: 60,
-        timeCrossing: 50,
-        timeLeaving: "11:15",
-      },
-    ]);
-  }, []);
+  //if a ferry got out, this function is called and update the time leaving
+  //of this ferry.
+  const ferryGotOut = (id) => {
+    const ferryToLeave = ferries.find((ferry) => ferry.id === id);
 
-  const balsaGotOut = () => {
-    const timeLeavingArray = balsas.map((balsa) => {
-      const [hours, minutes] = balsa.timeLeaving.split(":");
-      return Number(hours) * 60 + Number(minutes);
-    });
+    if (ferryToLeave) {
+      const newTimeLeaving = new Date(
+        ferryToLeave.timeLeaving.getTime() +
+          ferryToLeave.timeCrossing * 60 * 1000
+      );
+      const updatedFerries = ferries.map((ferry) => {
+        if (ferry.id === id) {
+          setFerryTimeLeaving(newTimeLeaving);
+          return { ...ferry, timeLeaving: newTimeLeaving };
+        } else {
+          return ferry;
+        }
+      });
 
-    const nextBalsatoLeave = Math.min(...timeLeavingArray);
-    const nextBalsatoLeaveIndex = timeLeavingArray.indexOf(nextBalsatoLeave);
+      const updatedVeiculos = veiculos - ferryToLeave.capacity;
 
-    timeLeavingArray[nextBalsatoLeaveIndex] +=
-      balsas[nextBalsatoLeaveIndex].timeCrossing;
-
-    const newTimeLeaving = timeLeavingArray.map((timeLeave) => {
-      const hoursBalsaleaving = Math.floor(timeLeave / 60);
-      const minutesBalsaleaving = timeLeave % 60;
-      return `${hoursBalsaleaving
-        .toString()
-        .padStart(2, "0")}:${minutesBalsaleaving.toString().padStart(2, "0")}`;
-    });
-    balsas.forEach((balsa, index) => {
-      balsa.timeLeaving = newTimeLeaving[index];
-    });
-
-    setVeiculos(veiculos - balsas[nextBalsatoLeaveIndex].capacity);
-
-    console.log(
-      time + "--id " + balsas[nextBalsatoLeaveIndex].id + "---vei" + veiculos
-    );
-    console.log(newTimeLeaving);
+      setFerries(updatedFerries);
+      setVeiculos(updatedVeiculos);
+    }
   };
 
-  // simulate a clock that speeds{
+  // simulate a clock that speeds
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const LineTime = () => {
@@ -113,29 +151,88 @@ function Home() {
     let hoursClock = currentTime.getHours();
     let minutesClock = currentTime.getMinutes();
     let secondsClock = currentTime.getSeconds();
-
+    let day = currentTime.getDate();
     setTime(
       `${hoursClock}:${minutesClock < 10 ? "0" : ""}${minutesClock}:${
         secondsClock < 10 ? "0" : ""
-      }${secondsClock}`
+      }${secondsClock}--${day}`
     );
 
-    if (veiculos >= 0) {
-      balsas.forEach((balsa) => {
-        if (balsa.timeLeaving <= time.slice(0, 5)) {
-          balsaGotOut();
+    setTimeNoSeconds(
+      `${hoursClock < 10 ? "0" : ""}${hoursClock}:${
+        minutesClock < 10 ? "0" : ""
+      }${minutesClock}:00`
+    );
+
+    const activeFerries = ferries.filter((ferry) => ferry.isActive);
+    if (veiculos > 0) {
+      activeFerries.forEach((actFerry) => {
+        if (
+          actFerry.timeLeaving <= new Date(`2023-03-${day}T${timeNoSeconds}`)
+        ) {
+          ferryGotOut(actFerry.id);
+          console.log(actFerry);
+          console.log(time);
         }
       });
     }
   }, [currentTime]);
-  // }
+
+  //switch the ferry status (if the ferry is working or not)
+  const handleSwitch = (id) => {
+    const updateFerryState = ferries.map((ferry) => {
+      if (ferry.id === id) {
+        return {
+          ...ferry,
+          isActive: !ferry.isActive,
+        };
+      }
+      return ferry;
+    });
+    setFerries(updateFerryState);
+    // console.log(ferries);
+  };
+  const handleTimeToLeave = (id, e) => {
+    const updateTimeToLeave = ferries.map((ferry) => {
+      if (ferry.id === id) {
+        return {
+          ...ferry,
+          timeLeaving: (ferry.timeLeaving = e.target.value),
+        };
+      }
+      return ferry;
+    });
+    setFerries(updateTimeToLeave);
+    console.log(ferries);
+  };
+
+  useEffect(() => {
+    setInterval(function () {
+      setFerryCardColor("white");
+    }, 1000);
+    console.log(ferryCardColor + "entrei no effect");
+    if (ferryCardColor === "white") {
+      setFerryCardColor("blue");
+    }
+  }, [ferryTimeLeaving]);
+  // useEffect(() => {
+  //   const ferryToUpdate = ferries.find(
+  //     (ferry) => ferry.id === ferryTimeLeaving
+  //   );
+  //   if (ferryToUpdate) {
+  //     setFerryCardColor("blue");
+  //     setTimeout(() => setFerryCardColor("white"), 5000); // Change color back after 5 seconds
+  //   }
+  // }, [ferryTimeLeaving]);
 
   return (
-    <div>
-      Home Page
-      <div>
-        login :<a href={paths.login}> login</a>' 'fila:
-        <a href={paths.line}> fila</a>
+    <Container>
+      <TextContainer style={{ flex: "3" }}>
+        Home Page
+        <div>
+          login :<a href={paths.login}> login</a>' 'fila:
+          <a href={paths.line}> fila</a>
+        </div>
         <div>{time}</div>
         <input
           type="range"
@@ -144,11 +241,37 @@ function Home() {
           step="1"
           value={speed}
           onChange={handleSpeedChange}
+          width="fit-content"
         />
         <p>Speed: {speed}</p>
-        <Button>clique</Button>
+        <div>{veiculos}</div>
+      </TextContainer>
+      <div style={{ flex: 1 }}>
+        <TextContainer>Balsa</TextContainer>
+        {ferries.map((ferry) => {
+          const ferryCardStyle = {
+            background: ferryTimeLeaving,
+            border: ferryTimeLeaving,
+          };
+          return (
+            <FerryContainer style={ferryCardStyle}>
+              <TextContainer sx={{ width: "70%" }}>
+                <TextTitle>{ferry.isActive}</TextTitle>
+                <TextSub>{ferry.id}</TextSub>
+                <TextSub>{ferry.timeLeaving.toString()}</TextSub>
+              </TextContainer>
+              <Input
+                type="time"
+                sx={{ border: "none" }}
+                // onChange={(e) => handleTimeToLeave(ferry.id, e)}
+              />
+              <Switch onClick={() => handleSwitch(ferry.id)} defaultChecked />
+            </FerryContainer>
+          );
+        })}
       </div>
-    </div>
+      {/* <Button>clique</Button> */}
+    </Container>
   );
 }
 

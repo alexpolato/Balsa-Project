@@ -1,8 +1,8 @@
-import { Button } from "../components/button";
-import paths from "../utils/paths";
 import { useEffect, useState } from "react";
 import { DateHandler } from "../utils/dateHandler";
 import styled from "@emotion/styled";
+import { Switch } from "@mui/material";
+import { AccessTime } from "@mui/icons-material";
 
 const Container = styled(`div`)({
   display: "flex",
@@ -10,12 +10,41 @@ const Container = styled(`div`)({
   margin: "0 auto",
   justifyContent: "space-between",
 });
+
 const FerryContainer = styled(`div`)({
-  display: "flex",
-  boxShadow: "0px 1px 4px rgba(0,0,0,0.2)",
-  padding: "10px 20px",
+  marginBottom: "20px",
+  width: "300px",
+  border: "1.5px solid #99E1D9",
   borderRadius: "10px",
-  marginBottom: "10px",
+  padding: "10px 30px",
+  display: "flex",
+  alignItems: "center",
+
+  boxShadow: " 0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+
+  justifyContent: "space-between",
+});
+
+const TextContainer = styled(`div`)({
+  display: "flex",
+  flexDirection: "column",
+  // alignItems: "center",
+  fontFamily: "Roboto, sans-serif",
+});
+
+const TextTitle = styled(`div`)({
+  fontSize: "30px",
+});
+const TextSub = styled(`div`)({
+  fontSize: "15px",
+  textAlign: "center",
+  maxWidth: "250px",
+  //
+});
+const Text = styled(`div`)({
+  fontSize: "10px",
+  color: "#688291",
+  textAlign: "center",
 });
 
 const ferriesMock = [
@@ -54,11 +83,10 @@ const ferriesMock = [
 function Home2() {
   const [lineLength, setLineLength] = useState(250);
   const [ferries, setFerries] = useState(ferriesMock);
-  const [time, setTime] = useState("");
 
   function calculateLineTime() {
     const activeFerries = ferries.filter((ferry) => ferry.isActive);
-    let minutes = 0;
+
     let allTimeLeving = [];
 
     for (let x = 0; x < activeFerries.length; x++) {
@@ -88,29 +116,59 @@ function Home2() {
       }
     }
 
-    console.log(allTimeLeving);
+    // console.log(allTimeLeving);
 
     return timeToLeaveFinalFerry;
   }
+  // console.log(balsaStatus + " id " + ferries.id);
+  const handleSwitch = (id) => {
+    const updateFerryState = ferries.map((ferry) => {
+      if (ferry.id === id) {
+        return {
+          ...ferry,
+          isActive: !ferry.isActive,
+        };
+      }
+      return ferry;
+    });
+    setFerries(updateFerryState);
+    // console.log(ferries);
+  };
+  let ferryCardColor = "";
 
   return (
     <Container>
-      <div style={{ flex: 3 }}>
-        Home Page
-        <div>
-          {DateHandler.formatUtc(calculateLineTime(), "HH:mm dd/MM/yy")}
-        </div>
-      </div>
+      <TextContainer style={{ width: "70%", flex: "3" }}>
+        Tempo da fila
+        <FerryContainer>
+          <AccessTime sx={{ fontSize: 50, color: "#50A9B0" }} />
+          <TextTitle>
+            {" "}
+            {DateHandler.formatUtc(calculateLineTime(), "HH:mm dd/MM/yy")}
+          </TextTitle>
+        </FerryContainer>
+      </TextContainer>
+
       <div style={{ flex: 1 }}>
-        Balsa
+        <TextContainer>Balsa</TextContainer>
         {ferries.map((ferry) => {
+          if (ferry.isActive === false) {
+            ferryCardColor = "#A68F97";
+          } else if (ferry.isActive) {
+            ferryCardColor = "white";
+          }
           return (
-            <FerryContainer>
-              <div>
-                <h1>{ferry.name}</h1>
-                <p>{ferry.id}</p>
-              </div>
-              <div>{ferry.isActive}</div>
+            <FerryContainer
+              style={{
+                background: ferryCardColor,
+                borderColor: ferryCardColor,
+              }}
+            >
+              <TextContainer sx={{ width: "70%" }}>
+                <TextTitle>{ferry.name}</TextTitle>
+                <TextSub>{ferry.id}</TextSub>
+              </TextContainer>
+              <Switch onClick={() => handleSwitch(ferry.id)} defaultChecked />
             </FerryContainer>
           );
         })}
