@@ -97,7 +97,6 @@ function Home() {
   const [time, setTime] = useState("");
   const [timeNoSeconds, setTimeNoSeconds] = useState("");
   const [speed, setSpeed] = useState(1);
-  const [ferryCardColor, setFerryCardColor] = useState("");
   const [ferryTimeLeaving, setFerryTimeLeaving] = useState([
     ferries.timeLeaving,
   ]);
@@ -206,15 +205,15 @@ function Home() {
     console.log(ferries);
   };
 
-  useEffect(() => {
-    setInterval(function () {
-      setFerryCardColor("white");
-    }, 1000);
-    console.log(ferryCardColor + "entrei no effect");
-    if (ferryCardColor === "white") {
-      setFerryCardColor("blue");
-    }
-  }, [ferryTimeLeaving]);
+  // useEffect(() => {
+  //   setInterval(function () {
+  //     setFerryCardColor("white");
+  //   }, 1000);
+  //   console.log(ferryCardColor + "entrei no effect");
+  //   if (ferryCardColor === "white") {
+  //     setFerryCardColor("blue");
+  //   }
+  // }, [ferryTimeLeaving]);
   // useEffect(() => {
   //   const ferryToUpdate = ferries.find(
   //     (ferry) => ferry.id === ferryTimeLeaving
@@ -250,7 +249,12 @@ function Home() {
         <TextContainer>Balsa</TextContainer>
         {ferries.map((ferry) => {
           const ferryCardStyle = {
-            background: ferryTimeLeaving,
+            background:
+              time &&
+              DateHandler.rawFormat(ferry.timeLeaving, "yyyy-MM-dd hh:mm") ===
+                DateHandler.rawFormat(currentTime, "yyyy-MM-dd hh:mm")
+                ? "blue"
+                : "white",
             border: ferryTimeLeaving,
           };
           return (

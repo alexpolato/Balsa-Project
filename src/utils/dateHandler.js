@@ -6,6 +6,9 @@ export const DateHandler = (function () {
       const parsedDate = parse(date, inFormat, new Date());
       return isValid(parsedDate) ? format(parsedDate, outFormat) : date;
     },
+    rawFormat: function (date, outFormat) {
+      return format(date, outFormat);
+    },
     formatUtc: function (date, outFormat) {
       const parsedDate = parseISO(date);
       return isValid(parsedDate) ? format(parsedDate, outFormat) : date;
